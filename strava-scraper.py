@@ -66,6 +66,7 @@ async def google_auth() -> Credentials:
     # If there are no (valid) credentials available, let the user log in.
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
+            print("Refreshing Google OAuth credentials...")
             creds.refresh(Request())
         else:
             if not os.path.exists(GOOGLE_OAUTH_CREDENTIALS_FILE):
@@ -267,6 +268,8 @@ async def get_strava_activities(access_token, page=1, per_page=30) -> Any:
         list: A list of activity dictionaries.
     """
     headers = {"Authorization": f"Bearer {access_token}"}
+    # TODO: Look into if we can use the 'before' and 'after' parameters to limit the results
+    # to a specific date range, e.g. the last 30 days.
     params = {"page": page, "per_page": per_page}
     try:
         response = requests.get(ACTIVITIES_URL, headers=headers, params=params)
